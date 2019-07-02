@@ -2,7 +2,7 @@ package exercises;
 
 import java.util.List;
 
-import org.curiousworks.lesson9.FileHelper;
+import examples.FileHelper;
 
 public class Palindrome {
 
