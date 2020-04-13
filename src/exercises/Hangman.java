@@ -4,6 +4,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 import javax.sound.sampled.AudioInputStream;
@@ -13,12 +15,15 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import examples.FileHelper;
+
 public class Hangman extends KeyAdapter {
 
 	Stack<String> puzzles = new Stack<String>();
 	ArrayList<JLabel> boxes = new ArrayList<JLabel>();
 	int lives = 9;
 	JLabel livesLabel = new JLabel("" + lives);
+	char[] correctLetters;
 
 	public static void main(String[] args) {
 		Hangman hangman = new Hangman();
@@ -36,7 +41,7 @@ public class Hangman extends KeyAdapter {
 	private String puzzle;
 
 	private void createUI() {
-		playDeathKnell();
+		// playDeathKnell();
 		JFrame frame = new JFrame("June's Hangman");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		panel.add(livesLabel);
@@ -52,6 +57,8 @@ public class Hangman extends KeyAdapter {
 		lives = 9;
 		livesLabel.setText("" + lives);
 		puzzle = puzzles.pop();
+		char[] correctLetters = new char[puzzle.length()];
+		Arrays.fill(correctLetters, '_');
 		System.out.println("puzzle is now " + puzzle);
 		createBoxes();
 	}
@@ -59,8 +66,14 @@ public class Hangman extends KeyAdapter {
 	public void keyTyped(KeyEvent arg0) {
 		System.out.println(arg0.getKeyChar());
 		updateBoxesWithUserInput(arg0.getKeyChar());
+		if (winnerWinner(correctLetters)) {
+			System.out.println("Great, you have won the hangman game.");
+			loadNextPuzzle();
+		}
+
 		if (lives == 0) {
 			playDeathKnell();
+			System.out.println("Sorry you lose.");
 			loadNextPuzzle();
 		}
 	}
@@ -70,6 +83,7 @@ public class Hangman extends KeyAdapter {
 		for (int i = 0; i < puzzle.length(); i++) {
 			if (puzzle.charAt(i) == keyChar) {
 				boxes.get(i).setText("" + keyChar);
+				correctLetters[i] = puzzle.charAt(i);
 				gotOne = true;
 			}
 		}
@@ -91,7 +105,7 @@ public class Hangman extends KeyAdapter {
 		}
 		boxes.clear();
 	}
-	
+
 	public void playDeathKnell() {
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File("resource/funeral-march.wav"));
@@ -104,8 +118,14 @@ public class Hangman extends KeyAdapter {
 		}
 	}
 
+	public boolean winnerWinner(char[] correctLetters) {
+		if (puzzle.contentEquals(correctLetters.toString())) {
+
+			return true;
+		}
+
+		return false;
+
+	}
+
 }
-
-
-
-
